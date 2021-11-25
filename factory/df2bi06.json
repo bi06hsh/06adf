@@ -1,0 +1,9 @@
+{
+	"name": "df2bi06",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "4e0ff875-9614-4762-a6a9-2fbe9f795a50",
+		"tenantId": "3b7d6361-d220-4816-a614-4c8dca316c03"
+	}
+}
