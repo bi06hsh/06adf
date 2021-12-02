@@ -1,0 +1,35 @@
+{
+	"name": "dsDVSatProducts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "isDV",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Product_SID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ProductName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LoadDate",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "RecordSource",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Sat_Products"
+		}
+	}
+}

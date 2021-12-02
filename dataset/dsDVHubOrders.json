@@ -1,0 +1,36 @@
+{
+	"name": "dsDVHubOrders",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "isDV",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Order_SID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Order_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LoadDate",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "RecordSource",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Hub_Orders"
+		}
+	}
+}

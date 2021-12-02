@@ -1,0 +1,41 @@
+{
+	"name": "dsDVSatOrderDetails",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "isDV",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Link_Order_Details_SID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Quantity",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "UnitPrice",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "LoadDate",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "RecordSource",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Sat_Order_Details"
+		}
+	}
+}
