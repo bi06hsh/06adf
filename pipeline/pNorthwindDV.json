@@ -5,9 +5,36 @@
 			{
 				"name": "dfFillHubs",
 				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dfFillHubs",
+						"type": "DataFlowReference",
+						"parameters": {
+							"LoadDate": "currentUTC(\"Berlin\")"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "dfFillSatellites",
+				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "dfFillSatellites",
+						"activity": "dfFillLinks",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -23,32 +50,12 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "dfFillHubs",
-						"type": "DataFlowReference"
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
-				"name": "dfFillSatellites",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "1.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
 						"referenceName": "dfFillSatellites",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"parameters": {
+							"LoadDate": "currentUTC(\"Berlin\")",
+							"RecordSource": "'Northwind'"
+						}
 					},
 					"compute": {
 						"coreCount": 8,
