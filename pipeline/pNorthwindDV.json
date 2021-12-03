@@ -86,7 +86,10 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "dfFillLinks",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"parameters": {
+							"LoadDate": "currentUTC(\"Berlin\")"
+						}
 					},
 					"compute": {
 						"coreCount": 8,
