@@ -3,10 +3,43 @@
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
-			"sources": [],
-			"sinks": [],
-			"transformations": [],
-			"script": ""
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsDVHubProducts",
+						"type": "DatasetReference"
+					},
+					"name": "DVHubProducts"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsDVHubOrders",
+						"type": "DatasetReference"
+					},
+					"name": "DVHubOrders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsDVLinkOrderDetails",
+						"type": "DatasetReference"
+					},
+					"name": "DVLinkOrderDetails"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Union1"
+				},
+				{
+					"name": "Auswaehlen"
+				},
+				{
+					"name": "AbgeleiteteSpalte1"
+				}
+			],
+			"script": "parameters{\n\tLoadDate as timestamp (currentUTC(\"Berlin\"))\n}\nsource(output(\n\t\tProduct_SID as integer,\n\t\tProduct_ID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DVHubProducts\nsource(output(\n\t\tOrder_SID as integer,\n\t\tOrder_ID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DVHubOrders\nDVHubProducts, DVHubOrders union(byName: true)~> Union1\nUnion1 select(mapColumn(\n\t\tProduct_SID,\n\t\tOrder_SID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Auswaehlen\nAuswaehlen derive(LoadDate = $LoadDate,\n\t\tRecordSource = 'Northwind') ~> AbgeleiteteSpalte1\nAbgeleiteteSpalte1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tLink_Order_Details_SID as integer,\n\t\tProduct_SID as integer,\n\t\tOrder_SID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> DVLinkOrderDetails"
 		}
 	}
 }
