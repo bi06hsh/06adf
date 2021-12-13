@@ -6,7 +6,7 @@
 		"type": "AzureSqlDatabase",
 		"typeProperties": {
 			"connectionString": "integrated security=False;encrypt=True;connection timeout=30;data source=ssqlbi06b.database.windows.net;initial catalog=BI06_Northwind;user id=bi06",
-			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEM5OEZEODA3LTREMjgtNDc4Qy1BMkRCLUI0OEExNzZFNUY0MF8wNDJjNDZmZi0xMTEzLTQxYTctYjNkYS0xOGM1M2U0YWFmZTgiDQp9"
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEE3QkYwRkI4LUJENjEtNEE2Ny04ODQzLUNCQTBEOUI0ODI0OF8xOWUyZDIyZS05NWY3LTQ2MmUtOTBmMS1kMDA0YjRiZjIyNWQiDQp9"
 		}
 	}
 }
