@@ -7,9 +7,13 @@
 			"metadata": "Data Factory-Name",
 			"defaultValue": "df2bi06"
 		},
-		"IsBI06Northwind_connectionString": {
+		"isDV_connectionString": {
 			"type": "secureString",
-			"metadata": "Sichere Zeichenfolge für \"connectionString\" von \"IsBI06Northwind\""
+			"metadata": "Sichere Zeichenfolge für \"connectionString\" von \"isDV\""
+		},
+		"isNorthwind_connectionString": {
+			"type": "secureString",
+			"metadata": "Sichere Zeichenfolge für \"connectionString\" von \"isNorthwind\""
 		}
 	},
 	"variables": {
@@ -17,121 +21,454 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/IsBI06Northwind')]",
+			"name": "[concat(parameters('factoryName'), '/isDV')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
-					"connectionString": "[parameters('IsBI06Northwind_connectionString')]"
+					"connectionString": "[parameters('isDV_connectionString')]"
 				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dsBI06NorthwindCustomers')]",
+			"name": "[concat(parameters('factoryName'), '/isNorthwind')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('isNorthwind_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsDVHubOrders')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "IsBI06Northwind",
+					"referenceName": "isDV",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
+					{
+						"name": "Order_SID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Order_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LoadDate",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "RecordSource",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Hub_Orders"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/isDV')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsDVHubProducts')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "isDV",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Product_SID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Product_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LoadDate",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "RecordSource",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Hub_Products"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/isDV')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsDVLinkOrderDetails')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "isDV",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Link_Order_Details_SID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Product_SID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Order_SID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LoadDate",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "RecordSource",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Link_Order_Details"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/isDV')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsDVSatOrderDetails')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "isDV",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Link_Order_Details_SID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Quantity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "UnitPrice",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "LoadDate",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "RecordSource",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Sat_Order_Details"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/isDV')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsDVSatProducts')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "isDV",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Product_SID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProductName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LoadDate",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "RecordSource",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Sat_Products"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/isDV')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsNorthwindOrderDetails')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "isNorthwind",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "OrderID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProductID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "UnitPrice",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "Quantity",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "Discount",
+						"type": "real",
+						"precision": 7
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Order Details"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/isNorthwind')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsNorthwindOrders')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "isNorthwind",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "OrderID",
+						"type": "int",
+						"precision": 10
+					},
 					{
 						"name": "CustomerID",
 						"type": "nchar"
 					},
 					{
-						"name": "CompanyName",
+						"name": "EmployeeID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "OrderDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "RequiredDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ShippedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ShipVia",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Freight",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "ShipName",
 						"type": "nvarchar"
 					},
 					{
-						"name": "ContactName",
+						"name": "ShipAddress",
 						"type": "nvarchar"
 					},
 					{
-						"name": "ContactTitle",
+						"name": "ShipCity",
 						"type": "nvarchar"
 					},
 					{
-						"name": "Address",
+						"name": "ShipRegion",
 						"type": "nvarchar"
 					},
 					{
-						"name": "City",
+						"name": "ShipPostalCode",
 						"type": "nvarchar"
 					},
 					{
-						"name": "Region",
-						"type": "nvarchar"
-					},
-					{
-						"name": "PostalCode",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Country",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Phone",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Fax",
+						"name": "ShipCountry",
 						"type": "nvarchar"
 					}
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "Customers"
+					"table": "Orders"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/IsBI06Northwind')]"
+				"[concat(variables('factoryId'), '/linkedServices/isNorthwind')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dsBI06NorthwindCustomers06')]",
+			"name": "[concat(parameters('factoryName'), '/dsNorthwindProducts')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "IsBI06Northwind",
+					"referenceName": "isNorthwind",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
 					{
-						"name": "Customer_ID",
+						"name": "ProductID",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "CompanyName",
-						"type": "varchar"
+						"name": "ProductName",
+						"type": "nvarchar"
 					},
 					{
-						"name": "ContactName",
-						"type": "varchar"
+						"name": "SupplierID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CategoryID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "QuantityPerUnit",
+						"type": "nvarchar"
+					},
+					{
+						"name": "UnitPrice",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "UnitsInStock",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "UnitsOnOrder",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "ReorderLevel",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "Discontinued",
+						"type": "bit"
 					}
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "Customers06"
+					"table": "Products"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/IsBI06Northwind')]"
+				"[concat(variables('factoryId'), '/linkedServices/isNorthwind')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dfCopyCustomers')]",
+			"name": "[concat(parameters('factoryName'), '/dfFillHubs')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -140,38 +477,204 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "dsBI06NorthwindCustomers",
+								"referenceName": "dsNorthwindOrders",
 								"type": "DatasetReference"
 							},
-							"name": "NorthwindCustomer"
+							"name": "NorthwindOrders"
+						},
+						{
+							"dataset": {
+								"referenceName": "dsNorthwindProducts",
+								"type": "DatasetReference"
+							},
+							"name": "NorthwindProducts"
 						}
 					],
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "dsBI06NorthwindCustomers06",
+								"referenceName": "dsDVHubOrders",
 								"type": "DatasetReference"
 							},
-							"name": "Customers06"
+							"name": "DVHubOrders"
+						},
+						{
+							"dataset": {
+								"referenceName": "dsDVHubProducts",
+								"type": "DatasetReference"
+							},
+							"name": "DVHubProducts"
 						}
 					],
-					"transformations": [],
-					"script": "source(output(\n\t\tCustomerID as string,\n\t\tCompanyName as string,\n\t\tContactName as string,\n\t\tContactTitle as string,\n\t\tAddress as string,\n\t\tCity as string,\n\t\tRegion as string,\n\t\tPostalCode as string,\n\t\tCountry as string,\n\t\tPhone as string,\n\t\tFax as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> NorthwindCustomer\nNorthwindCustomer sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tCustomer_ID as integer,\n\t\tCompanyName as string,\n\t\tContactName as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tCompanyName,\n\t\tContactName\n\t)) ~> Customers06"
+					"transformations": [
+						{
+							"name": "AuswaehlenOrders"
+						},
+						{
+							"name": "AbgeleiteteSpalte1"
+						},
+						{
+							"name": "AuswaehlenSatProductsProducts"
+						},
+						{
+							"name": "AbgeleiteteSpalte2"
+						}
+					],
+					"script": "parameters{\n\tLoadDate as timestamp (currentUTC(\"Berlin\"))\n}\nsource(output(\n\t\tOrderID as integer,\n\t\tCustomerID as string,\n\t\tEmployeeID as integer,\n\t\tOrderDate as timestamp,\n\t\tRequiredDate as timestamp,\n\t\tShippedDate as timestamp,\n\t\tShipVia as integer,\n\t\tFreight as decimal(19,4),\n\t\tShipName as string,\n\t\tShipAddress as string,\n\t\tShipCity as string,\n\t\tShipRegion as string,\n\t\tShipPostalCode as string,\n\t\tShipCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> NorthwindOrders\nsource(output(\n\t\tProductID as integer,\n\t\tProductName as string,\n\t\tSupplierID as integer,\n\t\tCategoryID as integer,\n\t\tQuantityPerUnit as string,\n\t\tUnitPrice as decimal(19,4),\n\t\tUnitsInStock as integer,\n\t\tUnitsOnOrder as integer,\n\t\tReorderLevel as integer,\n\t\tDiscontinued as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> NorthwindProducts\nNorthwindOrders select(mapColumn(\n\t\tOrderID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> AuswaehlenOrders\nAuswaehlenOrders derive(LoadDate = $LoadDate,\n\t\tRecordSource = 'Northwind') ~> AbgeleiteteSpalte1\nNorthwindProducts select(mapColumn(\n\t\tProductID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> AuswaehlenSatProductsProducts\nAuswaehlenSatProductsProducts derive(LoadDate = $LoadDate,\n\t\tRecordSource = 'Northwind') ~> AbgeleiteteSpalte2\nAbgeleiteteSpalte1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tOrder_SID as integer,\n\t\tOrder_ID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tOrder_ID = OrderID,\n\t\tLoadDate,\n\t\tRecordSource\n\t)) ~> DVHubOrders\nAbgeleiteteSpalte2 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tProduct_SID as integer,\n\t\tProduct_ID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tProduct_ID = ProductID,\n\t\tLoadDate,\n\t\tRecordSource\n\t)) ~> DVHubProducts"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/dsBI06NorthwindCustomers')]",
-				"[concat(variables('factoryId'), '/datasets/dsBI06NorthwindCustomers06')]"
+				"[concat(variables('factoryId'), '/datasets/dsNorthwindOrders')]",
+				"[concat(variables('factoryId'), '/datasets/dsNorthwindProducts')]",
+				"[concat(variables('factoryId'), '/datasets/dsDVHubOrders')]",
+				"[concat(variables('factoryId'), '/datasets/dsDVHubProducts')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pCopyCustomers')]",
+			"name": "[concat(parameters('factoryName'), '/dfFillLinks')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "dsDVHubProducts",
+								"type": "DatasetReference"
+							},
+							"name": "DVHubProducts"
+						},
+						{
+							"dataset": {
+								"referenceName": "dsDVHubOrders",
+								"type": "DatasetReference"
+							},
+							"name": "DVHubOrders"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dsDVLinkOrderDetails",
+								"type": "DatasetReference"
+							},
+							"name": "DVLinkOrderDetails"
+						}
+					],
+					"transformations": [
+						{
+							"name": "AbgeleiteteSpalte1"
+						},
+						{
+							"name": "Auswaehlen"
+						},
+						{
+							"name": "Verbinden1"
+						}
+					],
+					"script": "parameters{\n\tLoadDate as timestamp (currentUTC(\"Berlin\"))\n}\nsource(output(\n\t\tProduct_SID as integer,\n\t\tProduct_ID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DVHubProducts\nsource(output(\n\t\tOrder_SID as integer,\n\t\tOrder_ID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DVHubOrders\nAuswaehlen derive(LoadDate = $LoadDate,\n\t\tRecordSource = 'Northwind') ~> AbgeleiteteSpalte1\nVerbinden1 select(mapColumn(\n\t\tProduct_SID,\n\t\tOrder_SID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Auswaehlen\nDVHubProducts, DVHubOrders join(Product_SID == Order_SID,\n\tjoinType:'outer',\n\tbroadcast: 'auto')~> Verbinden1\nAbgeleiteteSpalte1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tLink_Order_Details_SID as integer,\n\t\tProduct_SID as integer,\n\t\tOrder_SID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> DVLinkOrderDetails"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/dsDVHubProducts')]",
+				"[concat(variables('factoryId'), '/datasets/dsDVHubOrders')]",
+				"[concat(variables('factoryId'), '/datasets/dsDVLinkOrderDetails')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dfFillSatellites')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "dsDVHubProducts",
+								"type": "DatasetReference"
+							},
+							"name": "DVHubProducts"
+						},
+						{
+							"dataset": {
+								"referenceName": "dsDVHubOrders",
+								"type": "DatasetReference"
+							},
+							"name": "DVHubOrders"
+						},
+						{
+							"dataset": {
+								"referenceName": "dsNorthwindOrderDetails",
+								"type": "DatasetReference"
+							},
+							"name": "NorthwindOrderDetails"
+						},
+						{
+							"dataset": {
+								"referenceName": "dsNorthwindProducts",
+								"type": "DatasetReference"
+							},
+							"name": "NorthwindProducts"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dsDVSatProducts",
+								"type": "DatasetReference"
+							},
+							"name": "DVSatProducts"
+						},
+						{
+							"dataset": {
+								"referenceName": "dsDVSatOrderDetails",
+								"type": "DatasetReference"
+							},
+							"name": "DVSatOrderDetails"
+						}
+					],
+					"transformations": [
+						{
+							"name": "AbgeleiteteSpalteProducts"
+						},
+						{
+							"name": "AuswaehlenProducts"
+						},
+						{
+							"name": "AuswahlenOrderDetails"
+						},
+						{
+							"name": "AbgeleiteteSpalte1"
+						},
+						{
+							"name": "Join"
+						},
+						{
+							"name": "JoinDeux"
+						}
+					],
+					"script": "parameters{\n\tLoadDate as timestamp (currentUTC(\"Berlin\")),\n\tRecordSource as string ('Northwind')\n}\nsource(output(\n\t\tProduct_SID as integer,\n\t\tProduct_ID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DVHubProducts\nsource(output(\n\t\tOrder_SID as integer,\n\t\tOrder_ID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DVHubOrders\nsource(output(\n\t\tOrderID as integer,\n\t\tProductID as integer,\n\t\tUnitPrice as decimal(19,4),\n\t\tQuantity as integer,\n\t\tDiscount as float\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> NorthwindOrderDetails\nsource(output(\n\t\tProductID as integer,\n\t\tProductName as string,\n\t\tSupplierID as integer,\n\t\tCategoryID as integer,\n\t\tQuantityPerUnit as string,\n\t\tUnitPrice as decimal(19,4),\n\t\tUnitsInStock as integer,\n\t\tUnitsOnOrder as integer,\n\t\tReorderLevel as integer,\n\t\tDiscontinued as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> NorthwindProducts\nAuswaehlenProducts derive(LoadDate = $LoadDate,\n\t\tRecordSource = 'Northwind') ~> AbgeleiteteSpalteProducts\nJoin select(mapColumn(\n\t\tProductName\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> AuswaehlenProducts\nJoinDeux select(mapColumn(\n\t\tQuantity,\n\t\tUnitPrice\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> AuswahlenOrderDetails\nAuswahlenOrderDetails derive(LoadDate = $LoadDate,\n\t\tRecordSource = 'Northwind') ~> AbgeleiteteSpalte1\nDVHubProducts, NorthwindProducts join(Product_SID == ProductID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join\nDVHubOrders, NorthwindOrderDetails join(OrderID == Order_ID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinDeux\nAbgeleiteteSpalteProducts sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tProduct_SID as integer,\n\t\tProductName as string,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tProductName,\n\t\tLoadDate,\n\t\tRecordSource\n\t)) ~> DVSatProducts\nAbgeleiteteSpalte1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tLink_Order_Details_SID as integer,\n\t\tQuantity as integer,\n\t\tUnitPrice as double,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> DVSatOrderDetails"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/dsDVHubProducts')]",
+				"[concat(variables('factoryId'), '/datasets/dsDVHubOrders')]",
+				"[concat(variables('factoryId'), '/datasets/dsNorthwindOrderDetails')]",
+				"[concat(variables('factoryId'), '/datasets/dsNorthwindProducts')]",
+				"[concat(variables('factoryId'), '/datasets/dsDVSatProducts')]",
+				"[concat(variables('factoryId'), '/datasets/dsDVSatOrderDetails')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pNorthwindDV')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "dfCopyCustomersNew",
+						"name": "dfFillHubs",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -184,12 +687,100 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "dfCopyCustomers",
+								"referenceName": "dfFillHubs",
 								"type": "DataFlowReference",
-								"parameters": {},
+								"parameters": {
+									"LoadDate": "currentUTC(\"Berlin\")"
+								},
 								"datasetParameters": {
-									"NorthwindCustomer": {},
-									"Customers06": {}
+									"NorthwindOrders": {},
+									"NorthwindProducts": {},
+									"DVHubOrders": {},
+									"DVHubProducts": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "dfFillSatellites",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "dfFillLinks",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dfFillSatellites",
+								"type": "DataFlowReference",
+								"parameters": {
+									"LoadDate": "currentUTC(\"Berlin\")",
+									"RecordSource": "'Northwind'"
+								},
+								"datasetParameters": {
+									"DVHubProducts": {},
+									"DVHubOrders": {},
+									"NorthwindOrderDetails": {},
+									"NorthwindProducts": {},
+									"DVSatProducts": {},
+									"DVSatOrderDetails": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "dfFillLinks",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "dfFillHubs",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dfFillLinks",
+								"type": "DataFlowReference",
+								"parameters": {
+									"LoadDate": "currentUTC(\"Berlin\")"
+								},
+								"datasetParameters": {
+									"DVHubProducts": {},
+									"DVHubOrders": {},
+									"DVLinkOrderDetails": {}
 								}
 							},
 							"staging": {},
@@ -210,7 +801,9 @@
 				"lastPublishTime": "2021-11-25T10:16:54Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dfCopyCustomers')]"
+				"[concat(variables('factoryId'), '/dataflows/dfFillHubs')]",
+				"[concat(variables('factoryId'), '/dataflows/dfFillSatellites')]",
+				"[concat(variables('factoryId'), '/dataflows/dfFillLinks')]"
 			]
 		}
 	]

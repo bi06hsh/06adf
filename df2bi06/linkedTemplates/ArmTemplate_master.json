@@ -7,9 +7,13 @@
 			"metadata": "Data Factory-Name",
 			"defaultValue": "df2bi06"
 		},
-		"IsBI06Northwind_connectionString": {
+		"isDV_connectionString": {
 			"type": "secureString",
-			"metadata": "Sichere Zeichenfolge für \"connectionString\" von \"IsBI06Northwind\""
+			"metadata": "Sichere Zeichenfolge für \"connectionString\" von \"isDV\""
+		},
+		"isNorthwind_connectionString": {
+			"type": "secureString",
+			"metadata": "Sichere Zeichenfolge für \"connectionString\" von \"isNorthwind\""
 		},
 		"containerUri": {
 			"type": "string",
@@ -38,8 +42,11 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"IsBI06Northwind_connectionString": {
-						"value": "[parameters('IsBI06Northwind_connectionString')]"
+					"isDV_connectionString": {
+						"value": "[parameters('isDV_connectionString')]"
+					},
+					"isNorthwind_connectionString": {
+						"value": "[parameters('isNorthwind_connectionString')]"
 					}
 				}
 			},

@@ -5,7 +5,10 @@
 		"factoryName": {
 			"value": "df2bi06"
 		},
-		"IsBI06Northwind_connectionString": {
+		"isDV_connectionString": {
+			"value": ""
+		},
+		"isNorthwind_connectionString": {
 			"value": ""
 		}
 	}
