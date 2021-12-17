@@ -37,19 +37,19 @@
 			],
 			"transformations": [
 				{
+					"name": "JoinOrders"
+				},
+				{
+					"name": "JoinProducts"
+				},
+				{
+					"name": "Select1"
+				},
+				{
 					"name": "AbgeleiteteSpalte1"
-				},
-				{
-					"name": "Auswaehlen"
-				},
-				{
-					"name": "JoinHubOrders"
-				},
-				{
-					"name": "JoinHubProducts"
 				}
 			],
-			"script": "parameters{\n\tLoadDate as timestamp (currentUTC(\"Berlin\"))\n}\nsource(output(\n\t\tOrderID as integer,\n\t\tProductID as integer,\n\t\tUnitPrice as decimal(19,4),\n\t\tQuantity as integer,\n\t\tDiscount as float\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> NorthwindOrderDetails\nsource(output(\n\t\tOrder_SID as integer,\n\t\tOrder_ID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DVHubOrders\nsource(output(\n\t\tProduct_SID as integer,\n\t\tProduct_ID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DVHubProducts\nAuswaehlen derive(LoadDate = $LoadDate,\n\t\tRecordSource = 'Northwind') ~> AbgeleiteteSpalte1\nJoinHubProducts select(mapColumn(\n\t\tProduct_SID,\n\t\tOrder_SID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Auswaehlen\nNorthwindOrderDetails, DVHubOrders join(OrderID == Order_ID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinHubOrders\nJoinHubOrders, DVHubProducts join(ProductID == Product_ID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinHubProducts\nAbgeleiteteSpalte1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tLink_Order_Details_SID as integer,\n\t\tProduct_SID as integer,\n\t\tOrder_SID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tProduct_SID,\n\t\tOrder_SID,\n\t\tLoadDate,\n\t\tRecordSource\n\t)) ~> DVLinkOrderDetails"
+			"script": "parameters{\n\tLoadDate as timestamp (currentUTC(\"Berlin\"))\n}\nsource(output(\n\t\tOrderID as integer,\n\t\tProductID as integer,\n\t\tUnitPrice as decimal(19,4),\n\t\tQuantity as integer,\n\t\tDiscount as float\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> NorthwindOrderDetails\nsource(output(\n\t\tOrder_SID as integer,\n\t\tOrder_ID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DVHubOrders\nsource(output(\n\t\tProduct_SID as integer,\n\t\tProduct_ID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DVHubProducts\nNorthwindOrderDetails, DVHubOrders join(OrderID == Order_ID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinOrders\nJoinOrders, DVHubProducts join(ProductID == Product_ID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinProducts\nJoinProducts select(mapColumn(\n\t\tOrder_SID,\n\t\tProduct_SID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 derive(LoadDate = $LoadDate,\n\t\tRecordSource = 'Northwind') ~> AbgeleiteteSpalte1\nAbgeleiteteSpalte1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tLink_Order_Details_SID as integer,\n\t\tProduct_SID as integer,\n\t\tOrder_SID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tProduct_SID,\n\t\tOrder_SID,\n\t\tLoadDate,\n\t\tRecordSource\n\t)) ~> DVLinkOrderDetails"
 		}
 	}
 }

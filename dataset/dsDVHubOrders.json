@@ -20,17 +20,19 @@
 			},
 			{
 				"name": "LoadDate",
-				"type": "datetime2",
-				"scale": 7
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
 			},
 			{
 				"name": "RecordSource",
-				"type": "nvarchar"
+				"type": "varchar"
 			}
 		],
 		"typeProperties": {
 			"schema": "dbo",
 			"table": "Hub_Orders"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

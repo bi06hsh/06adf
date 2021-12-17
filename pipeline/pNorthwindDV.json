@@ -3,6 +3,40 @@
 	"properties": {
 		"activities": [
 			{
+				"name": "dfFillLinks",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "dfFillHubs",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dfFillLinks",
+						"type": "DataFlowReference",
+						"parameters": {
+							"LoadDate": "currentUTC(\"Berlin\")"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
 				"name": "dfFillHubs",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
@@ -53,41 +87,6 @@
 						"referenceName": "dfFillSatellites",
 						"type": "DataFlowReference",
 						"parameters": {
-							"LoadDate": "currentUTC(\"Berlin\")",
-							"RecordSource": "'Northwind'"
-						}
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
-				"name": "dfFillLinks",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "dfFillHubs",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "1.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "dfFillLinks",
-						"type": "DataFlowReference",
-						"parameters": {
 							"LoadDate": "currentUTC(\"Berlin\")"
 						}
 					},
@@ -99,9 +98,8 @@
 				}
 			}
 		],
-		"concurrency": 1,
 		"annotations": [],
-		"lastPublishTime": "2021-11-25T10:16:54Z"
+		"lastPublishTime": "2021-12-17T10:08:11Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }
