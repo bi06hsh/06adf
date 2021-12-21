@@ -13,13 +13,6 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "dsNorthwindOrderDetails",
-						"type": "DatasetReference"
-					},
-					"name": "NortwindOrderDetails"
-				},
-				{
-					"dataset": {
 						"referenceName": "dsStarDimProducts",
 						"type": "DatasetReference"
 					},
@@ -31,6 +24,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "DVLinkOrderDetails"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsNorthwindOrderDetails",
+						"type": "DatasetReference"
+					},
+					"name": "NorthwindOrderDetails"
 				}
 			],
 			"sinks": [
@@ -44,9 +44,6 @@
 			],
 			"transformations": [
 				{
-					"name": "Verbinden1"
-				},
-				{
 					"name": "AbgeleiteteSpalte1"
 				},
 				{
@@ -57,9 +54,12 @@
 				},
 				{
 					"name": "Select2"
+				},
+				{
+					"name": "Verbinden4"
 				}
 			],
-			"script": "parameters{\n\tLoadDate as timestamp (currentUTC(\"Berlin\"))\n}\nsource(output(\n\t\tOrder_SID as integer,\n\t\tOrder_ID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DVHubOrders\nsource(output(\n\t\tOrderID as integer,\n\t\tProductID as integer,\n\t\tUnitPrice as decimal(19,4),\n\t\tQuantity as integer,\n\t\tDiscount as float\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> NortwindOrderDetails\nsource(output(\n\t\tProduct_SID as integer,\n\t\tProduct_ID as integer,\n\t\tProduct_Name as string,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> StarDimProducts\nsource(output(\n\t\tLink_Order_Details_SID as integer,\n\t\tProduct_SID as integer,\n\t\tOrder_SID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DVLinkOrderDetails\nDVHubOrders, NortwindOrderDetails join(Order_ID == OrderID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Verbinden1\nSelect2 derive(LoadDate = $LoadDate,\n\t\tRecordSource = 'NorthwindDV') ~> AbgeleiteteSpalte1\nVerbinden3, StarDimProducts join(DVLinkOrderDetails@Product_SID == StarDimProducts@Product_SID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Verbinden2\nVerbinden1, DVLinkOrderDetails join(DVHubOrders@Order_SID == DVLinkOrderDetails@Order_SID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Verbinden3\nVerbinden2 select(mapColumn(\n\t\tOrder_ID,\n\t\tUnitPrice,\n\t\tQuantity,\n\t\tProduct_SID = StarDimProducts@Product_SID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select2\nAbgeleiteteSpalte1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tOrder_ID as integer,\n\t\tProduct_SID as integer,\n\t\tQuantity as integer,\n\t\tUnitPrice as decimal(19,4),\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> StarFactOrders"
+			"script": "parameters{\n\tLoadDate as timestamp (currentUTC(\"Berlin\"))\n}\nsource(output(\n\t\tOrder_SID as integer,\n\t\tOrder_ID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DVHubOrders\nsource(output(\n\t\tProduct_SID as integer,\n\t\tProduct_ID as integer,\n\t\tProduct_Name as string,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> StarDimProducts\nsource(output(\n\t\tLink_Order_Details_SID as integer,\n\t\tProduct_SID as integer,\n\t\tOrder_SID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DVLinkOrderDetails\nsource(output(\n\t\tOrderID as integer,\n\t\tProductID as integer,\n\t\tUnitPrice as decimal(19,4),\n\t\tQuantity as integer,\n\t\tDiscount as float\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> NorthwindOrderDetails\nSelect2 derive(LoadDate = $LoadDate,\n\t\tRecordSource = 'NorthwindDV') ~> AbgeleiteteSpalte1\nVerbinden3, StarDimProducts join(DVLinkOrderDetails@Product_SID == StarDimProducts@Product_SID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Verbinden2\nDVHubOrders, DVLinkOrderDetails join(DVHubOrders@Order_SID == DVLinkOrderDetails@Order_SID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Verbinden3\nVerbinden4 select(mapColumn(\n\t\tOrder_ID,\n\t\tUnitPrice,\n\t\tQuantity,\n\t\tProduct_SID = StarDimProducts@Product_SID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select2\nVerbinden2, NorthwindOrderDetails join(Order_ID == OrderID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Verbinden4\nAbgeleiteteSpalte1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tOrder_ID as integer,\n\t\tProduct_SID as integer,\n\t\tQuantity as integer,\n\t\tUnitPrice as decimal(19,4),\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> StarFactOrders"
 		}
 	}
 }
