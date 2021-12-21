@@ -7,6 +7,10 @@
 			"metadata": "Data Factory-Name",
 			"defaultValue": "df2bi06"
 		},
+		"IsStar_connectionString": {
+			"type": "secureString",
+			"metadata": "Sichere Zeichenfolge für \"connectionString\" von \"IsStar\""
+		},
 		"isDV_connectionString": {
 			"type": "secureString",
 			"metadata": "Sichere Zeichenfolge für \"connectionString\" von \"isDV\""
@@ -41,6 +45,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"IsStar_connectionString": {
+						"value": "[parameters('IsStar_connectionString')]"
 					},
 					"isDV_connectionString": {
 						"value": "[parameters('isDV_connectionString')]"

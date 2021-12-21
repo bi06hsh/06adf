@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "df2bi06"
 		},
+		"IsStar_connectionString": {
+			"value": ""
+		},
 		"isDV_connectionString": {
 			"value": ""
 		},
