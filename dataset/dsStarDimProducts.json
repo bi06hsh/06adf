@@ -1,0 +1,40 @@
+{
+	"name": "dsStarDimProducts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "IsStar",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Product_SID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Product_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Product_Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LoadDate",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "RecordSource",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "BI06_Star_Dim_Products"
+		}
+	}
+}

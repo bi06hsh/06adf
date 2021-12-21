@@ -1,0 +1,45 @@
+{
+	"name": "dfFillDim",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsDVHubProducts",
+						"type": "DatasetReference"
+					},
+					"name": "DVHubProducts"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsNorthwindProducts",
+						"type": "DatasetReference"
+					},
+					"name": "NorthwindProducts"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dsStarDimProducts",
+						"type": "DatasetReference"
+					},
+					"name": "StarDimProducts"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Select1"
+				},
+				{
+					"name": "JoinProducts"
+				},
+				{
+					"name": "AbgeleiteteSpalte1"
+				}
+			],
+			"script": "parameters{\n\tLoadDate as timestamp (currentUTC(\"Berlin\"))\n}\nsource(output(\n\t\tProduct_SID as integer,\n\t\tProduct_ID as integer,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DVHubProducts\nsource(output(\n\t\tProductID as integer,\n\t\tProductName as string,\n\t\tSupplierID as integer,\n\t\tCategoryID as integer,\n\t\tQuantityPerUnit as string,\n\t\tUnitPrice as decimal(19,4),\n\t\tUnitsInStock as integer,\n\t\tUnitsOnOrder as integer,\n\t\tReorderLevel as integer,\n\t\tDiscontinued as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> NorthwindProducts\nJoinProducts select(mapColumn(\n\t\tProduct_ID,\n\t\tProductName\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nDVHubProducts, NorthwindProducts join(Product_ID == ProductID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinProducts\nSelect1 derive(LoadDate = $LoadDate,\n\t\tRecordSource = 'NorthwindDV') ~> AbgeleiteteSpalte1\nAbgeleiteteSpalte1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tProduct_SID as integer,\n\t\tProduct_ID as integer,\n\t\tProduct_Name as string,\n\t\tLoadDate as timestamp,\n\t\tRecordSource as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tProduct_ID,\n\t\tProduct_Name = ProductName,\n\t\tLoadDate,\n\t\tRecordSource\n\t)) ~> StarDimProducts"
+		}
+	}
+}
